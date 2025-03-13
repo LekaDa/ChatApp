@@ -2,7 +2,9 @@ import { Image, ScrollView, StyleSheet, Text, TextInput, Touchable, TouchableOpa
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { RouteProp, useRoute, useNavigation, NavigationAction } from '@react-navigation/native';
-import { cloneElement, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useMutation, useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 
 interface MessagesRouteParams {
   chatRoom: {
@@ -20,12 +22,21 @@ export default function Messages() {
   const navigation = useNavigation<any>()
   const route = useRoute<RouteProp<RootStackParamList, 'Messages'>>()
   const [messageText, setMessageText] = useState<string>('')
+  const sendMessage = useMutation(api.chat.sendMessage)
+  const messages = useQuery(api.chat.getMessagesByRoom, {
+    chat_room_id: route.params.chatRoom?._id,
+  });
 
   useEffect(()=>{
     if(!route.params.chatRoom?._id){
       navigation.navigate('Views/ChatList')
     }
   },[route.params.chatRoom])
+
+  async function sendWrittenMessage(){
+    await sendMessage({user: 'Leka', chat_room_id: route.params.chatRoom?._id, body: messageText})
+    setMessageText('')
+  }
 
   return (
     <ThemedView style={styles.messageWrapper}>
@@ -34,14 +45,16 @@ export default function Messages() {
         <ThemedText style={{fontSize: 30, textAlign: 'center'}}>{route?.params?.chatRoom?.name}</ThemedText>
       </View>
       <ScrollView style={styles.messageContainer}>
-        <View style={styles.message}>
-          <Text style={{color: 'white'}}>Name ( timestamp )</Text>
-          <Text style={styles.messageBubble}>Message message messageMessage message messageMessage message messageMessage message message</Text>
+        {messages?.map((messageObject)=>{
+          return <View style={styles.message} key={messageObject._id}>
+          <Text style={{color: 'white'}}>{messageObject.user} ( {messageObject._creationTime} )</Text>
+          <Text style={styles.messageBubble}>{messageObject.body}</Text>
         </View>
+        })}
       </ScrollView>
       <View style={styles.messageInputWrapper}>
         <TextInput style={{width: '100%', outline: 'none', color: 'white'}} placeholder='Type something...' value={messageText} onChangeText={(text)=>setMessageText(text)} />
-        <View style={styles.sendMessageButton}><Image style={{width: "100%", height: "100%"}} source={require('../../assets/images/sendIcon.png')}/></View>
+        <TouchableOpacity disabled={!messageText} style={styles.sendMessageButton} onPress={sendWrittenMessage}><Image style={{width: "100%", height: "100%"}} source={require('../../assets/images/sendIcon.png')}/></TouchableOpacity>
       </View>
     </ThemedView>
   );
