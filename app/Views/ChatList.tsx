@@ -1,5 +1,4 @@
 import { StyleSheet, Button, Image, Touchable, TouchableOpacity } from 'react-native';
-import { HelloWave } from '@/components/HelloWave';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
@@ -32,7 +31,7 @@ export default function ChatList() {
       </ThemedView>
       <ThemedView style={styles.chatRoomWrapper}>
         {allChatRooms?.length ? allChatRooms?.map((chatRoom)=>{
-          return <TouchableOpacity key={chatRoom['_id']} style={styles.chatRoom} onPress={()=>navigation.navigate('Views/Messages',{id: chatRoom['_id']})}>
+          return <TouchableOpacity key={chatRoom['_id']} style={styles.chatRoom} onPress={()=>navigation.navigate('Views/Messages',{chatRoom})}>
             <ThemedView>
               <ThemedText style={{fontSize:22}}>{chatRoom?.name}</ThemedText>
               <ThemedText style={{fontSize:10}}>{chatRoom?._id}</ThemedText>
