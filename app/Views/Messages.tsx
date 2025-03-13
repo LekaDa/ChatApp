@@ -6,19 +6,7 @@ import { useEffect, useState } from 'react';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-
-interface MessagesRouteParams {
-  chatRoom: {
-    _id: string,
-    name: string,
-    _creationTime: string
-  }; 
-}
-
-type RootStackParamList = {
-  Messages: MessagesRouteParams;
-};
+import { RootStackParamList } from '@/constants/types';
 
 export default function Messages() {
   const navigation = useNavigation<any>()
@@ -32,7 +20,6 @@ export default function Messages() {
   
   useEffect(()=>{
     getUserName()
-    console.log(name, name)
     if(!route.params.chatRoom?._id){
       navigation.navigate('Views/ChatList')
     }
@@ -67,7 +54,6 @@ export default function Messages() {
   
     let formattedDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     
-    console.log(formattedDateTime, 'asd')
     return formattedDateTime
   }
 
@@ -79,7 +65,12 @@ export default function Messages() {
   return (
     <ThemedView style={styles.messageWrapper}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={()=>navigation.navigate('Views/ChatList')}><ThemedText>Back</ThemedText></TouchableOpacity>
+        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <TouchableOpacity onPress={()=>navigation.navigate('Views/ChatList')}><ThemedText>Back</ThemedText></TouchableOpacity>
+          <TouchableOpacity style={{width: 30, height: 30}} onPress={()=>navigation.navigate('Views/QrcodeGenerator',{chatRoom: route.params.chatRoom} )}>
+            <Image style={{width: '100%', height: '100%'}} source={require('../../assets/images/qr-code-svgrepo-com.svg')} />
+          </TouchableOpacity>
+        </View>
         <ThemedText style={{fontSize: 30, textAlign: 'center'}}>{route?.params?.chatRoom?.name}</ThemedText>
       </View>
       <ScrollView style={styles.messageContainer}>

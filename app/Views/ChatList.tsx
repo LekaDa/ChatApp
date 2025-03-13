@@ -1,4 +1,4 @@
-import { StyleSheet, Button, Image, Touchable, TouchableOpacity } from 'react-native';
+import { StyleSheet, Button, Image, Touchable, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ScrollView, TextInput } from 'react-native-gesture-handler';
@@ -21,10 +21,15 @@ export default function ChatList() {
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
       headerImage={
-        <Image
-          source={require('@/assets/images/chatIcon.png')}
-          style={styles.chatIcon}
-        />
+        <View style={{width: '100%', height:'100%'}}>
+          <Image
+            source={require('@/assets/images/chatIcon.png')}
+            style={styles.chatIcon}
+          />
+          <TouchableOpacity style={styles.qrcodeScannerLink} onPress={()=>navigation.navigate('Views/QrcodeScanner')}>
+            <Image style={{width: '100%', height: '100%'}} source={require('../../assets/images/qr-code-svgrepo-com.svg')} />
+          </TouchableOpacity>
+        </View>
       }>
       <ThemedView style={styles.createRoomWrapper}>
         <Button title='Create chat rooms' onPress={openModalForCreation}/>
@@ -81,5 +86,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 5,
     elevation: 3,
+  },
+  qrcodeScannerLink:{
+    width: 40, 
+    height: 40,
+    borderRadius: 10, 
+    padding: 5, 
+    backgroundColor: '#0391FD',
+    position: 'absolute',
+    bottom: 10,
+    right: 10
   }
 });

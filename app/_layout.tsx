@@ -40,6 +40,8 @@ export default function RootLayout() {
             <Stack.Screen name="Views/ChatList" options={{ headerShown: false }} />
             <Stack.Screen name="Views/CreateChatRoom" options={{ headerShown: false }} />
             <Stack.Screen name="Views/Messages" options={{ headerShown: false }} />
+            <Stack.Screen name="Views/QrcodeGenerator" options={{ headerShown: false }} />
+            <Stack.Screen name="Views/QrcodeScanner" options={{ headerShown: false }} />  
             <Stack.Screen name="+not-found" />
           </Stack>
           <StatusBar style="auto" />
