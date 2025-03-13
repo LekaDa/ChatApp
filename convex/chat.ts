@@ -23,7 +23,7 @@ export const getMessages = query({
     // Get most recent messages first
     const messages = await ctx.db.query("messages").order("desc").take(50);
     // Reverse the list so that it's in a chronological order.
-    return messages;
+    return messages.reverse();
   },
 });
 
