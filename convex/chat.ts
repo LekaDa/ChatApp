@@ -8,20 +8,10 @@ export const sendMessage = mutation({
     body: v.string(),
   },
   handler: async (ctx, args) => {
-    console.log("This TypeScript function is running on the server.");
     await ctx.db.insert("messages", {
       user: args.user,
       body: args.body,
     });
-
-    // Add the following lines:
-    if (args.body.startsWith("/wiki")) {
-      // Get the string after the first space
-      const topic = args.body.slice(args.body.indexOf(" ") + 1);
-      await ctx.scheduler.runAfter(0, internal.chat.getWikipediaSummary, {
-        topic,
-      });
-    }
   },
 });
 
@@ -35,23 +25,24 @@ export const getMessages = query({
   },
 });
 
-export const getWikipediaSummary = internalAction({
-  args: { topic: v.string() },
-  handler: async (ctx, args) => {
-    const response = await fetch(
-      "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&titles=" +
-        args.topic,
-    );
 
-    const summary = getSummaryFromJSON(await response.json());
-    await ctx.scheduler.runAfter(0, api.chat.sendMessage, {
-      user: "Wikipedia",
-      body: summary,
+export const createChatRoom = mutation({
+  args: {
+    name: v.string()
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.insert("chat_rooms", {
+      name: args.name
     });
   },
 });
 
-function getSummaryFromJSON(data: any) {
-  const firstPageId = Object.keys(data.query.pages)[0];
-  return data.query.pages[firstPageId].extract;
-}
+export const getChatRooms = query({
+  args: {},
+  handler: async (ctx) => {
+    // Get most recent messages first
+    const chatRooms = await ctx.db.query("chat_rooms").collect();
+    // Reverse the list so that it's in a chronological order.
+    return chatRooms;
+  },
+});
